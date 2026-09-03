@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Backgrounds */
+  --background: #030303;
+  --background-elevated: #09090b;
+  --surface: #141416;
+  --surface-elevated: #1c1c20;
+
+  /* Text */
+  --foreground: #f5f5f5;
+  --foreground-muted: #a1a1aa;
+  --foreground-subtle: #71717a;
+
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+
+  /* Intelligence green */
+  --primary: #19c98b;
+  --primary-hover: #52e6a5;
+  --primary-muted: rgba(25, 201, 139, 0.14);
+  --primary-deep: #0b6b4f;
+  --primary-atmospheric: #0a3d2b;
+
+  /* Market signal colors */
+  --positive: #22c55e;
+  --positive-muted: rgba(34, 197, 94, 0.12);
+  --negative: #ef4444;
+  --negative-muted: rgba(239, 68, 68, 0.12);
+  --warning: #d4a72c;
+  --warning-muted: rgba(212, 167, 44, 0.12);
+
+  /* Fonts — see layout.tsx for next/font wiring */
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 2px var(--background), 0 0 0 4px var(--primary);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--primary);
+  color: white;
+}
+
+/* Visible keyboard focus everywhere — never remove without replacing */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Thin, obsidian-styled scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-elevated);
+  border-radius: 8px;
+  border: 2px solid var(--background);
+}
+
+/* ---------------------------------------------------------------------
+   Phase 1B — environmental background system
+   Layered, reusable atmosphere: void base, faint technical grid,
+   radial green illumination, subtle noise. Applied via .leverage-field
+   and its data-tone variants rather than one-off gradients per section.
+--------------------------------------------------------------------- */
+
+.leverage-field {
+  position: relative;
+  isolation: isolate;
+}
+
+.leverage-field::before {
+  /* faint technical grid */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+}
+
+.leverage-field::after {
+  /* atmospheric green illumination */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(ellipse 900px 520px at var(--field-x, 50%) var(--field-y, -10%), var(--primary-atmospheric), transparent 65%);
+  opacity: var(--field-intensity, 0.55);
+}
+
+.leverage-field[data-tone="quiet"]::after {
+  opacity: 0.28;
+}
+.leverage-field[data-tone="active"]::after {
+  opacity: 0.75;
+}
+
+.leverage-noise {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.025;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.leverage-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border-strong), transparent);
+}
+
