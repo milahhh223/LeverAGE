@@ -111,7 +111,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
               <TrendingUp className="mx-auto mb-4 size-6 text-foreground-subtle" aria-hidden="true" />
               <h3 className="text-heading-md text-foreground">No evaluation has been run for this agent yet.</h3>
               <p className="mx-auto mt-2 max-w-md text-body-sm text-foreground-muted">
-                Starting one runs {agent.name}&apos;s strategy against a controlled sample dataset with $10,000 in
+                Starting one runs {agent.name}&apos;s strategy against real historical SOL price data with $10,000 in
                 virtual capital, and records every decision it makes along the way.
               </p>
               <div className="mt-6 flex justify-center">
@@ -142,11 +142,11 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
             <div className="overflow-hidden rounded-md border border-border-strong bg-surface">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-6 py-4">
                 <p className="text-body-sm text-foreground-muted">
-                  Evaluation completed against a controlled sample dataset — not live market data. Started with $
+                  Evaluation completed against real SOL price history (Aug 6 - Sep 5, 2026) — a frozen historical snapshot, not a live feed, so results stay reproducible. Started with $
                   {latest.evaluation.starting_capital.toLocaleString()} in virtual capital.
                 </p>
                 <div className="flex items-center gap-2">
-                  <PreviewBadge label="Sample dataset" />
+                  <PreviewBadge label="Real historical data" />
                   <StartEvaluationButton agentId={agent.id} />
                 </div>
               </div>

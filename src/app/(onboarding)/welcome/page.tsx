@@ -14,7 +14,7 @@ const STEPS = [
   {
     icon: Eye,
     title: "Run an evaluation",
-    description: "Your agent's strategy runs against a controlled sample dataset with $10,000 in virtual capital.",
+    description: "Your agent's strategy runs against real SOL price history with $10,000 in virtual capital.",
   },
   {
     icon: Target,

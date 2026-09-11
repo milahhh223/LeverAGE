@@ -7,6 +7,7 @@ import { signUpSchema, type SignUpInput } from "@/features/auth/schemas/auth-sch
 import { signUpAction } from "@/features/auth/services/auth-actions";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 
 export function SignUpForm() {
@@ -49,12 +50,7 @@ export function SignUpForm() {
         error={errors.password?.message}
         hint={errors.password ? undefined : "At least 8 characters, with a number and an uppercase letter."}
       >
-        <Input
-          type="password"
-          autoComplete="new-password"
-          invalid={Boolean(errors.password)}
-          {...register("password")}
-        />
+        <PasswordInput autoComplete="new-password" invalid={Boolean(errors.password)} {...register("password")} />
       </FormField>
 
       {serverError && (

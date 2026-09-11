@@ -24,3 +24,19 @@ export const signUpSchema = z.object({
 });
 
 export type SignUpInput = z.infer<typeof signUpSchema>;
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().min(1, "Enter your email").email("Enter a valid email address"),
+});
+
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+
+export const resetPasswordSchema = z.object({
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password needs at least one uppercase letter")
+    .regex(/[0-9]/, "Password needs at least one number"),
+});
+
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;

@@ -4,12 +4,12 @@ import { env } from "@/lib/env";
 import type { Database } from "@/types/database";
 
 const PROTECTED_PREFIXES = ["/dashboard", "/agents", "/portfolio", "/arena", "/settings", "/welcome"];
-const AUTH_PREFIXES = ["/sign-in", "/sign-up"];
+const AUTH_PREFIXES = ["/sign-in", "/sign-up", "/forgot-password"];
+// /reset-password is deliberately NOT in either list: the recovery session
+// arrives via a URL fragment (#access_token=...) that browsers never send
+// to the server, so middleware can never see it on the first request.
+// ResetPasswordForm checks for the session client-side instead.
 
-/**
- * Refreshes the Supabase auth session on every request and enforces
- * route protection. Called from middleware.ts at the project root.
- */
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -26,8 +26,6 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // IMPORTANT: do not remove this call. It refreshes the session and
-  // must run before any route-protection logic reads the user.
   const {
     data: { user },
   } = await supabase.auth.getUser();

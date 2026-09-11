@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
 import { cn } from "@/lib/utils";
@@ -11,9 +12,7 @@ export function Logo({ className, href = "/" }: { className?: string; href?: Rou
         className
       )}
     >
-      <span className="flex size-6 items-center justify-center rounded-sm bg-primary text-white text-[11px] font-mono font-bold">
-        L
-      </span>
+      <Image src="/logo-mark.png" alt="" width={36} height={36} className="size-9" priority />
       LeverAGE
     </Link>
   );
