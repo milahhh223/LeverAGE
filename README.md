@@ -4,7 +4,7 @@
 
 **LeverAGE** is a platform for building autonomous trading agents and actually proving what they can do — not just claiming it. Configure a strategy, a market focus, and a risk profile, then run a real, deterministic evaluation against real historical market data. Every decision your agent makes, and why it made it, is persisted and observable.
 
-![LeverAGE](<img width="1356" height="677" alt="image" src="https://github.com/user-attachments/assets/590e1ef2-e1a1-496b-ab09-4956e70b06e7" />
+![LeverAGE](<img width="1356" height="661" alt="LeverAGE-Hero-Img" src="https://github.com/user-attachments/assets/ea3d7e06-aace-4488-a34f-bd931f75efc0" />
 )
 
 ## What it does
@@ -45,3 +45,29 @@ supabase db push
 Applying manually via the Supabase SQL Editor instead? Run the files in `supabase/migrations/` **in numeric order** — each one depends on functions or tables the previous one creates.
 
 ## Project structure
+src/
+├── app/ route segments: (marketing), (auth), (onboarding), (app), api/
+├── components/ ui/ (primitives), layout/ (app shell), marketing/, shared/ (logo, motion)
+├── features/ auth/, agents/, evaluations/ — business logic, schemas, and
+│ server actions, kept out of page components
+├── lib/ supabase clients, env validation, utils, constants
+├── config/ site.ts, navigation.ts
+└── middleware.ts session refresh + route protection
+
+
+## Scripts
+
+```bash
+npm run dev         # start dev server
+npm run build        # production build
+npm run lint          # eslint
+npm run typecheck   # tsc --noEmit
+```
+
+## Design principles
+
+- **Real vs. honest-about-what-isn't.** Agent configuration, evaluations, decisions, and performance are all real and persisted. The dataset they evaluate against is real historical SOL price data, but deliberately frozen rather than live — labeled as such everywhere it's shown, so results stay honest and reproducible.
+- **No dead interactions.** Every button either does something real or is clearly labeled as not-yet-available. Nothing pretends to work.
+- **Row Level Security everywhere.** Every table a user's data lives in enforces `auth.uid() = user_id` at the database level, not just in application code.
+
+See `docs/database-architecture.md` for full schema documentation and build history.
