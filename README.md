@@ -1,101 +1,47 @@
-# LeverAGE — Phase 3 (in progress)
+# LeverAGE
 
 > The market is real. The capital is virtual.
 
-Phase 1 established the foundation. Phase 2 added real, persisted agent
-creation. Phase 3 adds the agent evaluation foundation: users can run a
-real, deterministic evaluation of their agent's strategy against a
-controlled sample dataset, with every decision and portfolio snapshot
-persisted to Supabase. It intentionally does **not** yet implement
-portfolios, live/real market data, or the Arena. Those remain later
-phases; see `docs/database-architecture.md` for how they're expected to
-build on this.
+**LeverAGE** is a platform for building autonomous trading agents and actually proving what they can do — not just claiming it. Configure a strategy, a market focus, and a risk profile, then run a real, deterministic evaluation against real historical market data. Every decision your agent makes, and why it made it, is persisted and observable.
 
-## Stack
+![LeverAGE](<img width="1356" height="677" alt="image" src="https://github.com/user-attachments/assets/590e1ef2-e1a1-496b-ab09-4956e70b06e7" />
+)
 
-- Next.js 15 (App Router) + React 19 + TypeScript
-- Tailwind CSS, token-driven (see `src/app/globals.css` and `tailwind.config.ts`)
-- Supabase (Auth + Postgres + Row Level Security)
-- Zod + React Hook Form
-- Framer Motion (animation infrastructure only — primitives, not a full cinematic system yet)
-- Lucide React (icons)
+## What it does
+
+- **Create an agent** — name it, pick a strategy (momentum, mean reversion, trend following, or hybrid), a market focus, a risk profile, and a max allocation.
+- **Run an evaluation** — your agent's strategy runs against real SOL/USD historical price data with $10,000 in virtual capital. No real funds, ever.
+- **See what it actually did** — every decision (LONG / SHORT / HOLD / EXIT), its reasoning, and how the portfolio moved over time, all persisted to Postgres and scoped to your account.
+- **Full account isolation** — every agent, evaluation, and decision is owned by one user and enforced by Row Level Security. Nobody sees anyone else's data.
+
+Evaluations run against a fixed, real historical dataset rather than a live feed, on purpose: it keeps results reproducible, so the same agent configuration always produces the same evaluation — which is what makes two agents genuinely comparable.
+
+## Tech stack
+
+- **Next.js 15** (App Router) + **React 19** + **TypeScript**
+- **Supabase** — Auth, Postgres, Row Level Security
+- **Tailwind CSS** — token-driven design system (`src/app/globals.css`, `tailwind.config.ts`)
+- **Zod** + **React Hook Form** for validated, typed forms
+- **Framer Motion** for interface motion
+- **Lucide** for icons
 
 ## Getting started
 
 ```bash
 npm install
-cp .env.example .env.local   # then fill in your Supabase project URL + anon key
+cp .env.example .env.local   # fill in your Supabase project URL + anon key
 npm run dev
 ```
 
-The app fails fast with a clear message if `.env.local` is missing or
-malformed — see `src/lib/env.ts`.
+The app fails fast with a clear error if `.env.local` is missing or malformed — see `src/lib/env.ts`.
 
-### Database
-
-Apply the migrations to your Supabase project:
+### Database setup
 
 ```bash
 supabase link --project-ref <your-project-ref>
 supabase db push
 ```
 
-This creates `public.profiles` (with a trigger that provisions a profile
-automatically on sign-up), `public.agents`, and the Phase 3 evaluation
-tables (`public.evaluations`, `public.evaluation_decisions`,
-`public.evaluation_snapshots`) — all with Row Level Security enabled.
-See `supabase/migrations/` and `docs/database-architecture.md`.
-
-**Note:** if you're applying these manually via the Supabase SQL Editor
-rather than the CLI, run the migration files in order (`0001` → `0002`
-→ `0003`) — later ones depend on functions/tables the earlier ones
-create.
+Applying manually via the Supabase SQL Editor instead? Run the files in `supabase/migrations/` **in numeric order** — each one depends on functions or tables the previous one creates.
 
 ## Project structure
-
-```
-src/
-├── app/              route segments: (marketing), (auth), (app), api/
-├── components/       ui/ (primitives), layout/ (shell), shared/ (logo, motion)
-├── features/         auth/ (implemented), agents/ (implemented),
-│                     evaluations/ (implemented — deterministic engine +
-│                     persistence), portfolio|arena (planned — README only)
-├── lib/              supabase clients, env validation, utils, constants
-├── config/           site.ts, navigation.ts
-└── middleware.ts     session refresh + route protection
-```
-
-`features/*` is where business logic, schemas, and services live —
-kept out of page components so later phases can extend a feature
-without touching routing or layout.
-
-## What's real vs. controlled-sample vs. placeholder
-
-Real and working: sign-up, sign-in, sign-out, session-protected routes,
-profile read/update (Settings page), the full design system and
-component library, **agent creation** (persisted to `public.agents`,
-owned and RLS-scoped per user), and **agent evaluation** — starting an
-evaluation runs a real, deterministic strategy engine
-(`src/features/evaluations/engine.ts`) and persists every decision and
-portfolio snapshot to Supabase (`evaluations`, `evaluation_decisions`,
-`evaluation_snapshots`), all owned and RLS-scoped per user.
-
-Controlled sample, not live: evaluations run against a fixed,
-hand-authored SOL price dataset (`src/features/evaluations/dataset.ts`),
-not live market data — clearly labeled as a "Sample dataset" wherever
-it's shown. The strategies themselves are simple, explainable
-deterministic rules, not a claim of profitability.
-
-Intentionally empty: Portfolio and Arena pages show honest empty
-states — no fake data, no working buttons that lead nowhere. The
-Dashboard and Agents list reflect your real saved agents and their real
-latest evaluation status (or a real empty state if you have none).
-
-## Scripts
-
-```bash
-npm run dev         # start dev server
-npm run build        # production build
-npm run lint          # eslint
-npm run typecheck   # tsc --noEmit
-```
