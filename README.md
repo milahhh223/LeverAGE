@@ -604,250 +604,68 @@ This is a future integration direction, not a claim that live ClawPump deploymen
 
 ## Product Status
 
-LeverAGE is currently in active development.
+LeverAGE is live and in active development: **[leverage-amber.vercel.app](https://leverage-amber.vercel.app)**
 
-The project has completed important foundation work, but the core evaluation engine is still being built.
+### What works today
 
-### Completed Foundation
+**Accounts and ownership**
+* Registration, email verification, sign-in, sign-out, password reset
+* Session-protected routes and first-run onboarding
+* Every agent and evaluation is owned by one account and enforced with Row Level Security — verified across two separate accounts
 
-#### Phase 1 — Foundation and Design System
+**Agent creation**
+* Create and configure agents: name, strategy, market focus, risk profile, maximum allocation
+* Agents persist to Postgres, scoped per user
+* Agents list, agent detail page, and dashboard all reflect real saved data
 
-* Marketing site;
-* Design system;
-* Black and green visual identity;
-* Authentication;
-* Dashboard shell;
-* Navigation;
-* Honest empty states.
+**The evaluation engine — live and running**
+* Start a real evaluation from any agent's page
+* All four strategies are implemented as deterministic, testable logic: momentum, mean reversion, trend following, and hybrid
+* Risk profile genuinely changes behaviour — conservative requires a larger price move before acting and sizes positions at half the configured maximum; aggressive acts on smaller moves at full allocation
+* Maximum allocation is enforced by the engine, never exceeded
+* Every decision is persisted with its market price, observation, reasoning, action, confidence, and allocation
+* Every portfolio snapshot is persisted with value, return, and drawdown
+* Results are reproducible: the same configuration always produces the same evaluation
 
-#### Phase 1B — Visual Environment and Motion
+**Market data**
+* Evaluations run against real SOL/USD daily close prices (6 Aug — 5 Sept 2026)
+* The dataset is deliberately frozen rather than live, so results stay reproducible and comparable between agents
+* Labelled as historical data everywhere it appears — never presented as live market performance
 
-* Environmental design;
-* Intelligence loop visuals;
-* Agent preview;
-* Arena preview;
-* Smooth animations.
+### Verified behaviour
 
-#### Phase 2 — Agent Creation and Ownership
+All twelve strategy × risk-profile combinations were run against the dataset. The strategies behave as trading theory predicts: momentum and trend-following strategies profit across this period, which contained a genuine breakout rally, while mean-reversion strategies lose — the market trended rather than reverted. Results differ meaningfully across configurations, allocation limits are respected in every case, and identical inputs always produce identical outputs.
 
-* `agents` database table;
-* Row Level Security (RLS);
-* User isolation;
-* Agent creation;
-* Agents list;
-* Agent detail page;
-* Dashboard reflects real agents.
+### Not yet built
 
-### Multi-User Testing
-
-The agent ownership foundation has been tested with two separate users.
-
-The test confirmed that:
-
-* User A could create Oracle;
-* User B could create Agent 30;
-* Both agents were created successfully;
-* The accounts remained separate;
-* Each agent belonged to the correct user.
-
-This is an important milestone because LeverAGE now has the beginning of a real multi-user application rather than only a static frontend.
-
-### Current Limitation
-
-The agent currently does not yet perform real market evaluation.
-
-The following are still part of the development work:
-
-* Real market data integration;
-* Historical or live evaluation;
-* Actual strategy execution;
-* Real decision logging;
-* Performance calculation;
-* Portfolio simulation;
-* Agent comparison using evaluation results.
-
-The existing performance graph and decision history should not be treated as verified trading performance.
-
+* The Arena and agent-vs-agent comparison
+* Portfolios and manual demo trading
+* Live or rolling-window market data
+* Bring Your Own Agent integrations
+* The LeverAGE Score
 ---
 
 ## Development Roadmap
 
-### Phase 3 — Agent Evaluation Engine
+### Shipped
 
-This is the immediate next major development phase.
+**Phase 1 — Foundation and design system.** Marketing site, black-and-green design system, authentication, dashboard shell, navigation, honest empty states.
 
-#### Phase 3A — Evaluation Database
+**Phase 1B — Visual environment and motion.** Environmental design, intelligence loop visuals, agent and arena previews, restrained animation respecting reduced-motion preferences.
 
-Introduce the data structures required for evaluation.
+**Phase 2 — Agent creation and ownership.** The `agents` table with Row Level Security, user isolation, agent creation flow, agents list, agent detail page, dashboard integration.
 
-Conceptual tables:
+**Phase 3 — The agent evaluation engine.** The `evaluations`, `evaluation_decisions`, and `evaluation_snapshots` tables, all RLS-scoped. A deterministic strategy engine implementing all four strategies. Real historical market data. Risk rules that genuinely affect decisions. Full decision and performance persistence, surfaced on the agent page, agents list, and dashboard.
 
-```text
-agents
-   │
-   ├── evaluations
-   │
-   ├── decisions
-   │
-   ├── positions
-   │
-   └── performance_snapshots
-```
+**Phase 4 — Product experience.** First-run onboarding, password reset, production deployment, brand identity.
 
-#### `evaluations`
+### Next
 
-Tracks the evaluation itself.
+**Phase 5 — The Arena.** Now that agents have real evaluation records, make them comparable: agent profiles, evaluation history, leaderboards, risk-adjusted scoring.
 
-Expected fields include:
+**Phase 6 — Live market data.** Introduce rolling-window or live paper trading as an additional dataset alongside the frozen historical one, so past evaluations stay reproducible against the data they actually ran on.
 
-```text
-id
-agent_id
-status
-starting_capital
-current_capital
-market
-started_at
-completed_at
-```
-
-#### `decisions`
-
-Tracks decisions made during evaluation.
-
-Expected fields include:
-
-```text
-id
-evaluation_id
-agent_id
-timestamp
-market_price
-observation
-reasoning
-action
-confidence
-allocation
-result
-```
-
-#### `positions`
-
-Tracks the positions currently held by an agent.
-
-#### `performance_snapshots`
-
-Stores portfolio performance over time.
-
-All user-owned evaluation data should be protected with appropriate access controls and Row Level Security.
-
----
-
-### Phase 3B — Evaluation Creation
-
-Users should be able to open an agent and select:
-
-* Market;
-* Evaluation period;
-* Starting virtual capital.
-
-They should then be able to start an evaluation.
-
-The agent page should transition from showing placeholder performance to displaying actual evaluation status and results.
-
----
-
-### Phase 3C — Strategy Engine
-
-Implement the four initial strategy types:
-
-* Momentum;
-* Mean Reversion;
-* Trend Following;
-* Hybrid.
-
-The first implementation should prioritize deterministic and testable strategy behaviour.
-
----
-
-### Phase 3D — Real Decision Logging
-
-Turn the intelligence loop into actual application behaviour.
-
-```text
-OBSERVE
-   ↓
-REASON
-   ↓
-DECIDE
-   ↓
-MANAGE RISK
-   ↓
-MEASURE
-```
-
-Each decision should create a real database record.
-
----
-
-### Phase 3E — Real Performance
-
-Calculate and display:
-
-* Portfolio value;
-* Return;
-* Drawdown;
-* Win rate;
-* Number of decisions;
-* Position history.
-
-This is the transition from simulated presentation to actual evaluation data.
-
----
-
-### Phase 4 — Arena
-
-Once agents have real evaluation records, introduce meaningful comparison.
-
-Potential features:
-
-* Public agent profiles;
-* Evaluation history;
-* Agent leaderboard;
-* Performance comparison;
-* Competition periods;
-* Risk-adjusted scoring.
-
----
-
-### Phase 5 — Bring Your Own Agent
-
-The long-term product may allow advanced users to connect their own AI agents.
-
-A user could eventually connect:
-
-* An API;
-* An AI model;
-* Their own agent endpoint.
-
-LeverAGE would provide the environment, simulation, risk controls, logging, and measurement.
-
-The external agent could return a decision such as:
-
-```json
-{
-  "action": "LONG",
-  "confidence": 0.82,
-  "reasoning": "Current conditions support the strategy."
-}
-```
-
-The platform would then handle evaluation.
-
-This is the direction that could make LeverAGE more than a configured-agent application.
-
-> **The user builds the intelligence. LeverAGE proves what it does.**
-
+**Phase 7 — Bring Your Own Agent.** Let advanced builders connect their own agent endpoint. LeverAGE provides the environment, risk controls, logging, and measurement; the user provides the intelligence.
 ---
 
 ## Technical Architecture
