@@ -4,8 +4,8 @@
 
 **LeverAGE** is a platform for building autonomous trading agents and actually proving what they can do — not just claiming it. Configure a strategy, a market focus, and a risk profile, then run a real, deterministic evaluation against real historical market data. Every decision your agent makes, and why it made it, is persisted and observable.
 
-![LeverAGE](<img width="1356" height="661" alt="LeverAGE-Hero-Img" src="https://github.com/user-attachments/assets/ea3d7e06-aace-4488-a34f-bd931f75efc0" />
-)
+<img width="1356" height="661" alt="LeverAGE-Hero-Img" src="https://github.com/user-attachments/assets/ea3d7e06-aace-4488-a34f-bd931f75efc0" />
+
 
 ## What it does
 
