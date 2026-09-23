@@ -61,7 +61,9 @@ export async function getLatestEvaluationSummaries(
 
   for (const row of data ?? []) {
     // Rows are ordered newest-first, so the first row seen per agent is its latest evaluation.
-    if (map.has(row.agent_id)) continue;
+    // agent_id is guaranteed non-null here since the query above filters to only rows whose
+    // agent_id is in `agentIds` — this guard just satisfies the nullable column type.
+    if (!row.agent_id || map.has(row.agent_id)) continue;
     const returnPct =
       row.starting_capital > 0 ? ((row.current_capital - row.starting_capital) / row.starting_capital) * 100 : null;
     map.set(row.agent_id, { status: row.status, returnPct });

@@ -1,4 +1,5 @@
 import type { DatasetPoint } from "@/features/evaluations/dataset";
+import { round, unrealizedPnl, computeSnapshot, type OpenPosition } from "@/features/evaluations/portfolio-math";
 import type {
   DecisionAction,
   EngineDecision,
@@ -209,26 +210,6 @@ function getSignal(strategy: string, points: readonly DatasetPoint[], i: number,
   }
 }
 
-function round(value: number, decimals: number): number {
-  const factor = 10 ** decimals;
-  return Math.round(value * factor) / factor;
-}
-
-interface OpenPosition {
-  side: "LONG" | "SHORT";
-  entryPrice: number;
-  allocationPct: number;
-  allocationValue: number;
-}
-
-function unrealizedPnl(position: OpenPosition, currentPrice: number): number {
-  const priceReturn =
-    position.side === "LONG"
-      ? (currentPrice - position.entryPrice) / position.entryPrice
-      : (position.entryPrice - currentPrice) / position.entryPrice;
-  return position.allocationValue * priceReturn;
-}
-
 export function runEvaluation(
   agent: EvaluationAgentConfig,
   points: readonly DatasetPoint[],
@@ -303,17 +284,14 @@ export function runEvaluation(
       allocationPct,
     });
 
-    const unrealized = position ? unrealizedPnl(position, price) : 0;
-    const portfolioValue = capital + unrealized;
-    peak = Math.max(peak, portfolioValue);
-    const drawdownPct = peak > 0 ? ((peak - portfolioValue) / peak) * 100 : 0;
-    const returnPct = ((portfolioValue - startingCapital) / startingCapital) * 100;
+    const snapshot = computeSnapshot({ capital, position, price, startingCapital, peak });
+    peak = snapshot.peak;
 
     snapshots.push({
       sequence: i,
-      portfolioValue: round(portfolioValue, 2),
-      returnPct: round(returnPct, 3),
-      drawdownPct: round(drawdownPct, 3),
+      portfolioValue: snapshot.portfolioValue,
+      returnPct: snapshot.returnPct,
+      drawdownPct: snapshot.drawdownPct,
     });
   }
 

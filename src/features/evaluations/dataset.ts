@@ -1,19 +1,24 @@
 /**
- * CONTROLLED SAMPLE DATASET — NOT LIVE MARKET DATA.
+ * REAL HISTORICAL DATA — a fixed, frozen snapshot, not a live feed.
  *
- * A fixed, hand-authored SOL price series used to run deterministic agent
- * evaluations. It never changes at runtime and contains no randomness, so
- * the same agent configuration run against this dataset always produces
- * the exact same evaluation result — that reproducibility is the point.
+ * Daily close prices for SOL/USD, August 6 – September 5, 2026, sourced
+ * from CoinLore's exchange-aggregated historical data
+ * (https://www.coinlore.com/coin/solana/historical-data, retrieved
+ * 2026-09-07). This genuinely happened in the market — it is not
+ * invented or randomly generated.
  *
- * The series is shaped to give every strategy something real to react to:
- * a sustained uptrend (steps 0–9), a pullback that overshoots the recent
- * average (steps 10–17, a mean-reversion setup), then a recovery trend
- * (steps 18–29).
+ * It is still deliberately a *frozen* snapshot rather than a live feed:
+ * fetching fresh data on every evaluation would make results
+ * non-reproducible (two runs of the same agent minutes apart could
+ * differ just because the market moved) and would add a live external
+ * dependency that could fail exactly when someone is testing the
+ * product. Reproducibility is what makes evaluations comparable to each
+ * other — see docs/database-architecture.md.
  *
- * When a real historical or live market data provider is integrated,
- * evaluations should reference a `dataset_id` for that provider instead —
- * nothing about the evaluation engine's interface needs to change.
+ * When a live or rolling-window data source is added later, it should
+ * be a new dataset_id alongside this one, not a replacement — so past
+ * evaluations remain explainable against the exact data they actually
+ * ran against.
  */
 
 export interface DatasetPoint {
@@ -28,27 +33,27 @@ export interface EvaluationDataset {
   points: readonly DatasetPoint[];
 }
 
-const SOL_SAMPLE_PRICES: readonly number[] = [
-  142.1, 143.4, 145.2, 144.8, 147.1, 149.5, 151.2, 150.4, 153.8, 156.2, 158.9, 157.3, 154.1, 150.8, 148.2, 145.6,
-  143.9, 146.3, 149.1, 152.4, 155.8, 154.2, 151.9, 153.6, 157.2, 160.4, 163.1, 161.8, 165.3, 168.9,
+const SOL_HISTORICAL_PRICES: readonly number[] = [
+  72.59, 73.68, 76.04, 76.26, 76.0, 76.24, 75.6, 76.22, 75.39, 75.34, 74.61, 76.02, 77.07, 85.41, 87.67, 93.64, 93.95,
+  95.41, 98.46, 96.56, 102.09, 109.22, 104.12, 105.63, 101.81, 103.01, 100.03, 100.39, 103.93, 103.11,
 ];
 
-export const SOL_SAMPLE_DATASET: EvaluationDataset = {
-  id: "sol_sample_v1",
-  label: "Controlled SOL sample dataset (v1)",
+export const SOL_HISTORICAL_DATASET: EvaluationDataset = {
+  id: "sol_2026_08_v1",
+  label: "SOL daily closes, Aug 6 – Sep 5 2026 (CoinLore)",
   market: "sol",
-  points: SOL_SAMPLE_PRICES.map((price, t) => ({ t, price })),
+  points: SOL_HISTORICAL_PRICES.map((price, t) => ({ t, price })),
 };
 
 const DATASETS_BY_ID: Record<string, EvaluationDataset> = {
-  [SOL_SAMPLE_DATASET.id]: SOL_SAMPLE_DATASET,
+  [SOL_HISTORICAL_DATASET.id]: SOL_HISTORICAL_DATASET,
 };
 
 export function getDataset(market: "sol"): EvaluationDataset {
   // Only one dataset exists today; the market parameter is threaded through
   // now so adding a second market later doesn't require touching callers.
   void market;
-  return SOL_SAMPLE_DATASET;
+  return SOL_HISTORICAL_DATASET;
 }
 
 export function getDatasetById(id: string): EvaluationDataset | undefined {

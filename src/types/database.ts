@@ -81,13 +81,21 @@ export interface Database {
       evaluations: {
         Row: {
           id: string;
-          agent_id: string;
+          agent_id: string | null;
           user_id: string;
           market: string;
           dataset_id: string;
           starting_capital: number;
           current_capital: number;
           status: string;
+          mode: string;
+          label: string | null;
+          current_sequence: number;
+          position_side: string | null;
+          position_entry_price: number | null;
+          position_allocation_pct: number | null;
+          position_allocation_value: number | null;
+          peak_value: number;
           started_at: string | null;
           completed_at: string | null;
           created_at: string;
@@ -95,13 +103,21 @@ export interface Database {
         };
         Insert: {
           id?: string;
-          agent_id: string;
+          agent_id?: string | null;
           user_id: string;
           market: string;
           dataset_id: string;
           starting_capital?: number;
           current_capital?: number;
           status?: string;
+          mode?: string;
+          label?: string | null;
+          current_sequence?: number;
+          position_side?: string | null;
+          position_entry_price?: number | null;
+          position_allocation_pct?: number | null;
+          position_allocation_value?: number | null;
+          peak_value?: number;
           started_at?: string | null;
           completed_at?: string | null;
           created_at?: string;
@@ -109,13 +125,21 @@ export interface Database {
         };
         Update: {
           id?: string;
-          agent_id?: string;
+          agent_id?: string | null;
           user_id?: string;
           market?: string;
           dataset_id?: string;
           starting_capital?: number;
           current_capital?: number;
           status?: string;
+          mode?: string;
+          label?: string | null;
+          current_sequence?: number;
+          position_side?: string | null;
+          position_entry_price?: number | null;
+          position_allocation_pct?: number | null;
+          position_allocation_value?: number | null;
+          peak_value?: number;
           started_at?: string | null;
           completed_at?: string | null;
           created_at?: string;
@@ -127,7 +151,7 @@ export interface Database {
         Row: {
           id: string;
           evaluation_id: string;
-          agent_id: string;
+          agent_id: string | null;
           user_id: string;
           sequence: number;
           market_price: number;
@@ -141,7 +165,7 @@ export interface Database {
         Insert: {
           id?: string;
           evaluation_id: string;
-          agent_id: string;
+          agent_id?: string | null;
           user_id: string;
           sequence: number;
           market_price: number;
@@ -155,7 +179,7 @@ export interface Database {
         Update: {
           id?: string;
           evaluation_id?: string;
-          agent_id?: string;
+          agent_id?: string | null;
           user_id?: string;
           sequence?: number;
           market_price?: number;
@@ -172,7 +196,7 @@ export interface Database {
         Row: {
           id: string;
           evaluation_id: string;
-          agent_id: string;
+          agent_id: string | null;
           user_id: string;
           sequence: number;
           portfolio_value: number;
@@ -183,7 +207,7 @@ export interface Database {
         Insert: {
           id?: string;
           evaluation_id: string;
-          agent_id: string;
+          agent_id?: string | null;
           user_id: string;
           sequence: number;
           portfolio_value: number;
@@ -194,7 +218,7 @@ export interface Database {
         Update: {
           id?: string;
           evaluation_id?: string;
-          agent_id?: string;
+          agent_id?: string | null;
           user_id?: string;
           sequence?: number;
           portfolio_value?: number;
